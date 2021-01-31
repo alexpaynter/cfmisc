@@ -1,0 +1,25 @@
+Package: cfmisc
+Type: Package
+Title: Miscellaneous tools in Cystic Fibrosis Research 
+Version: 0.0.1
+Authors@R: person("Alex", "Paynter", email = "alexcpaynter@gmail.com",
+                  role = c("aut", "cre"))
+Description: A collection of miscellaneous functions which have become useful
+    in cystic fibrosis data analysis projects (but may be helpful otherwise).
+Depends: R (>= 3.1.0)
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    dplyr,
+    tidyr,
+    magrittr,
+    stringr,
+    AGD,
+    tibble,
+    rlang
+RoxygenNote: 7.1.1
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

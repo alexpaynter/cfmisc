@@ -1,0 +1,97 @@
+---
+title: "Last Percentile Carried Forward"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{last-percentile-carried-forward}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(pillar.sigfig = 5)
+```
+
+```{r setup, message = F, warning = F}
+library(cfmisc)
+library(dplyr)
+library(magrittr)
+library(tibble)
+```
+
+## Motivation
+
+Last percentile carried forward (LCOF) is a play on last observation carried forward, which is a simple way to impute missing data in longitudinal studies (see `zoo::na.lcof()` or `tidyr::fill()`).  This approach is usually relatively conservative in superiority study designs, as it assumes that any missing subjects had no change and thus they tend to take the estimate toward the null hypothesis.
+
+In cystic fibrosis research, height is sometimes an important endpoint but the ability to calculate lung function, especially percentage of predicted FEV1 (ppFEV1, see `rspiro`), is the real value of having height measured at each visit.  **LOCF is heavily anti-conservative when used on missing pediatric heights if the outcome is ppFEV1**.  That is, if we incorrectly assume that a person did not grow at all over time, they are likely shorter than the truth in our imputation, and thus their lung function *seems* higher with this incorrect reference.  Having a conservative approach available is the motivation for this function.  The need for such an approach became more urgent in 2020 as home spirometry is accelerating in use, but home-measured heights are considered unreliable.
+
+Rather than assuming that height has not changed over time, we assume that each person's $z$-score has remained the same over time, using the CDC growth curves a reference.  This is reasonable for populations which are moderately comparable to the CDC growth curves (for adult studies LOCF is fine).  Data-driven imputation methods may out-perform this method, but the advantage here is the ability to leverage the large CDC cohort to make good guesses even in small studies.
+
+## `lpcf_df()`
+
+The following dataframe will serve as our demonstration data:
+
+```{r tibble_create, include = F, echo = F}
+mis_dat <- tibble::tibble(
+  subject = c(rep("ATL-001", 2), rep("SEA-111",3), rep("LAX-219", 3)),
+  visit = c(1,2,1,2,3,1,2,3),
+  visit_age = c(10, 10.152, 16, 16.12, 16.35, 9, 9.25, 9.99),
+  sex = c("M", "M", rep("F", 6)),
+  ht = c(140.2, NA, 160.1, NA, NA, 129.15, NA, 129.00)
+) %>%
+  dplyr::arrange(subject, visit)
+```
+
+```{r tibble_show, include = T, echo = T}
+mis_dat
+```
+
+To carry the percentile forward for missing data we use `lpcf_df()`:
+
+```{r lpcf_demo}
+imp_dat <- lpcf_df(
+  dat = mis_dat, age = visit_age, sex = sex, height = ht,
+        group_vars = "subject", output_name = "ht_proj"
+)
+```
+
+Note that for subject LAX-219 there is no attempt to use visit 3 to impute the visit 2 data.  We only project forward.
+
+It is easy to verify that this has projected the $z$-scores correctly for each subject on the missing rows if we use the `AGD` package to compute the $z$-scores.
+
+```{r lpcf_check}
+imp_dat %>%
+  dplyr::mutate(z = AGD::y2z(
+    y = ht_proj, x = visit_age, sex = sex, ref = AGD::cdc.hgt
+  ))
+```
+
+## `project_ht()`
+
+`project_ht()` is a lower level interface that does the work of going from height to z to height at a different age.  It works on vectors rather than requiring dataframe input and output.  This may be useful if `lpcf_df()` does not meet your needs, or the ungrouping/sorting it does will mess with your workflow.  For example, if we rephrase our data above into a list of projections we want:
+
+```{r project_ht_reshape, include = F, echo = F}
+ph_df <- tibble::tibble(
+  subject = c("ATL-001", "SEA-111", "SEA-111", "LAX-219"),
+  sex = c("M", "F", "F", "F"),
+  old_ht = c(140.20, 160.10, 160.10, 129.15),
+  old_age = c(10, 16, 16, 9),
+  new_age = c(10.152, 16.120, 16.350, 9.250)
+)
+```
+
+```{r project_ht_show, include = T, echo = T}
+ph_df
+```
+
+Then we can just use the `project_ht()` function to get the new heights:
+
+```{r project_ht_do, include = T, echo = T}
+ph_df %>%
+  dplyr::mutate(new_ht = project_ht(sex, old_ht, old_age, new_age))
+```
+
+These are obviously the same projections, but `lpcf_df()` does the reshaping work and merging work for you.  `project_ht()` is useful if you need to relax the assumptions of `lpcf_df()`.
