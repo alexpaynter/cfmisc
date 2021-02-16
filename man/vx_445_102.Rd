@@ -6,8 +6,8 @@
 \title{VX-445-102 variant list.}
 \format{
 A data frame with 220 rows and 10 variables: \describe{
-  \item{variant}{The 'mutation' name, which is typically the CF legacy name}
-  \item{category}{ The full category name as stated on the sheet for example
+  \item{variant}{The 'mutation' name, which is typically in CF legacy format.}
+  \item{category}{The full category name as stated on the sheet, e.g.
   "Nonsense mutations"}
   \item{cat_abbr}{An abbreviated category name for easier typing, e.g. "nonsense"}
   }
@@ -19,7 +19,7 @@ A data frame with 220 rows and 10 variables: \describe{
 vx_445_102
 }
 \description{
-A list of variants to identify "minimal function" mutations for
+A list used to identify "minimal function" variants for
   eligibility in the F508del heterozygous clinical trial of ETI therapy (
   doi.org/10.1056/NEJMoa1908639)
 }

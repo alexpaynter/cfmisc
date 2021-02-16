@@ -1,7 +1,7 @@
 Package: cfmisc
 Type: Package
 Title: Miscellaneous tools in Cystic Fibrosis Research 
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: person("Alex", "Paynter", email = "alexcpaynter@gmail.com",
                   role = c("aut", "cre"))
 Description: A collection of miscellaneous functions which have become useful
