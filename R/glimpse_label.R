@@ -30,7 +30,7 @@ glimpse_label <- function(x, width = NULL, ...) {
     }
 
     var_types <- purrr::map_chr(
-        purrr::map(df, new_pillar_type),
+        purrr::map(df, pillar::new_pillar_type),
         format)
     ticked_names <- format(
         pillar::new_pillar_title(
