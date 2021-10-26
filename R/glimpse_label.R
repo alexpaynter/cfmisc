@@ -9,6 +9,7 @@
 #'
 #' @param x A dataframe, hopefully with some label attributes.
 #' @param width The character width of the printout.  Default: automatic guess.
+#' @param ... Not used.  Copy from glimpse().
 #' @export
 glimpse_label <- function(x, width = NULL, ...) {
     if (!is.null(width) && !is.finite(width)) {

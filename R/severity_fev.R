@@ -1,3 +1,8 @@
+#' @name schluchter_severity
+#'
+#' @aliases severity_schluchter
+#' @aliases severity_cutoff_schluchter
+#'
 #' @title Disease severity (Schluchter, 2005)
 #' @description Disease severity based on ppFEV1 given age.  Used in cystic fibrosis.
 #' @details Severity is a measure of disease aggressiveness based on age and ppFEV.  Essentially the observed ppFEV is compared with quantile-based cutoffs for that age.  This makes severity distinct from stage or condition, which usually just uses ppFEV1 alone (e.g. <40 ppFEV1 is on definition of an advanced stage).
@@ -5,9 +10,16 @@
 #' Schluchter identifies 'mild' and 'severe' phenotypes.  We label the group between these moderate.
 #' Data comes from Schluchter (2006) "Classifying severity...", DOI: 10.1164/rccm.200512-1919OC    Table E1.
 #' @param age Subject age in years.
-#' @param ppfev Percentage of predicted FEV1 (Schluchster used Knudson eq.)
 #' @param type Either "integer_age" or "linear_interpolation" for smooth function.
+#' @rdname schluchter_severity
+NULL
+
+
+
+#' @rdname schluchter_severity
+#' @param ppfev Percentage of predicted FEV1 (Schluchster used Knudson eq.)
 #' @param factorize T or F - return a factor?
+#' @export
 severity_schluchter <- function(age, ppfev, type = "integer_age",
                                 factorize = T) {
     stopifnot(type %in% c("integer_age", "linear_interpolation"))
@@ -41,8 +53,9 @@ severity_schluchter <- function(age, ppfev, type = "integer_age",
 }
 
 
-#' @describeIn severity_schluchter
+#' @rdname schluchter_severity
 #' @param line Either "severe" or "mild".
+#' @export
 severity_cutoff_schluchter <- function(age,
                                        line = "severe",
                                        type = "integer_age") {
@@ -69,7 +82,5 @@ severity_cutoff_schluchter <- function(age,
     } else {
         stop("type not known ('integer_age' or 'linear_interpolation')")
     }
-
-
     return(temp_df[["out"]])
 }

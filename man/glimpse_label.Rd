@@ -10,6 +10,8 @@ glimpse_label(x, width = NULL, ...)
 \item{x}{A dataframe, hopefully with some label attributes.}
 
 \item{width}{The character width of the printout.  Default: automatic guess.}
+
+\item{...}{Not used.  Copy from glimpse().}
 }
 \description{
 Similar to glimpse from the tibble package, with labels printed
