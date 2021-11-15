@@ -18,11 +18,9 @@ Imports:
     AGD,
     tibble,
     rlang,
-    cli,
-    pillar,
-    crayon,
-    purrr,
-    vctrs
+    vctrs,
+    lubridate,
+    glue
 RoxygenNote: 7.1.1
 Suggests: 
     knitr,
