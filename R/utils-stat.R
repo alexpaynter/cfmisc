@@ -37,11 +37,14 @@ n_pct_str <- function(n, d, show_d = F, digits = 0, na = "") {
 #' @description Creates a string representation of 3 numbers:  Point estimate,
 #'   lower bound for an interval, upper bound for an interval.  The purpose is
 #'   displaying statistical results (prediciton intervals, confidence intervals,
-#'   etc).
+#'   etc).  The default number of digits comes from the NEJM guidelines, which
+#'   recommend two digits as a good starting point for association measures
+#'   \url{https://www.nejm.org/author-center/new-manuscripts}
 #' @param est Estimate, a numeric vector
 #' @param lower Lower bound of the interval
 #' @param upper Upper bound of the interval
-#' @param est_digits Number of digits to round to for the estimate.
+#' @param est_digits Number of digits to round to for the estimate (default =
+#'   2).
 #' @param ci_digits Number of digits to round to for the CI (lower and upper).
 #'   Defaults to est_digits.
 #' @param na String to return if estimate is NA (optional - NULL for no action).
@@ -51,7 +54,7 @@ n_pct_str <- function(n, d, show_d = F, digits = 0, na = "") {
 #' est_int_str(c(NA,2), c(3,4), c(5.6, 7.8), est_digits = 0, plus_prefix = TRUE, na = "miss")
 #' @export
 est_int_str <- function(est, lower, upper,
-                        est_digits = 1,
+                        est_digits = 2,
                         ci_digits = est_digits,
                         na = "",
                         plus_prefix = T) {
@@ -73,6 +76,32 @@ est_int_str <- function(est, lower, upper,
         rtn[is.na(est)] <- glue::glue("{na}")
     }
     return(rtn)
+}
+
+#' @title NEJM-style P value formatter
+#' @description Updated NEJM guildines state: "In general, P values larger than
+#'   0.01 should be reported to two decimal places, and those between 0.01 and
+#'   0.001 to three decimal places; P values smaller than 0.001 should be
+#'   reported as P<0.001."
+#'   (\url{https://www.nejm.org/author-center/new-manuscripts})
+#' @param p numeric vector, all in [0,1] or NA.
+#' @param na String to return if missing.  Empty string is default.
+#' @return A character string representing a P value.
+#' @examples
+#' pval_nejm(c(0.2, 0.000003, NA))
+#' @export
+pval_nejm <- function(p, na = "") {
+    if (any(!is.numeric(p) | p < 0 | p > 1, na.rm = T)) {
+        stop("Input p must be a numeric vector between 0 and 1.")
+    }
+
+    dplyr::case_when(
+        is.na(p) ~ na,
+        p >= 0.01 ~ form_f(p, 2),
+        p >= 0.001 ~ form_f(p, 3),
+        T ~ "<0.001"
+    )
+
 }
 
 

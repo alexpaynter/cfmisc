@@ -8,7 +8,7 @@ est_int_str(
   est,
   lower,
   upper,
-  est_digits = 1,
+  est_digits = 2,
   ci_digits = est_digits,
   na = "",
   plus_prefix = T
@@ -21,7 +21,8 @@ est_int_str(
 
 \item{upper}{Upper bound of the interval}
 
-\item{est_digits}{Number of digits to round to for the estimate.}
+\item{est_digits}{Number of digits to round to for the estimate (default =
+2).}
 
 \item{ci_digits}{Number of digits to round to for the CI (lower and upper).
 Defaults to est_digits.}
@@ -34,7 +35,9 @@ Defaults to est_digits.}
 Creates a string representation of 3 numbers:  Point estimate,
   lower bound for an interval, upper bound for an interval.  The purpose is
   displaying statistical results (prediciton intervals, confidence intervals,
-  etc).
+  etc).  The default number of digits comes from the NEJM guidelines, which
+  recommend two digits as a good starting point for association measures
+  \url{https://www.nejm.org/author-center/new-manuscripts}
 }
 \examples{
 est_int_str(c(1,2), c(3,4), c(5.6, 7.8))
