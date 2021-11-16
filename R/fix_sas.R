@@ -56,7 +56,7 @@ clean_crf <- function(sas_df, vn = F, date = T) {
 #' @param file File path to a SAS dataset, passed on to haven::read_sas().
 #' @export
 read_crf <- function(file, vn = F, date = T) {
-    rtn <- haven::read_sas(sas_df) %>%
+    rtn <- haven::read_sas(file) %>%
         clean_crf(., vn = vn, date = date)
 
     return(rtn)
